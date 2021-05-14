@@ -1,6 +1,5 @@
 import requests
 from bs4 import BeautifulSoup
-import numpy
 
 
 def find_athletes(firstname=None, surname=None, club=None):
@@ -34,37 +33,59 @@ def find_athletes(firstname=None, surname=None, club=None):
             'xc': row[4].text,
             'sex': row[5].text,
             'club': row[6].text,
-            'id': str(row[7]).split('"')[3].split('=')[1]})
+            'athlete_id': str(row[7]).split('"')[3].split('=')[1]})
 
     return data
 
 
-def get_athlete_details(id=None):
-    if id is None:
+def get_athlete(athlete_id):
+    if athlete_id is None:
         raise ValueError('Please input a valid athlete id.')
 
-    url = f'https://www.thepowerof10.info/athletes/profile.aspx?athleteid={id}'
+    url = f'https://www.thepowerof10.info/athletes/profile.aspx?athleteid={athlete_id}'
     html = requests.get(url)
     soup = BeautifulSoup(html.text, 'html.parser')
+    
+    if soup.find('div', {'id': 'pnlMainGeneral'}).text.replace('\n','') == 'Profile not found':
+        raise ValueError('Profile not found. Please input a valid athlete id')
 
     athlete_dets = soup.find('div', {'id': 'cphBody_pnlAthleteDetails'}).find_all('table')[1].text.replace('\n', '').split(':')
     athlete_abo = soup.find('div', {'id': 'cphBody_pnlAbout'}).find_all('table')[1]
     athlete_pb = soup.find('div', {'id': 'cphBody_divBestPerformances'}).find_all('tr')
     athlete_perf = soup.find('div', {'id': 'cphBody_pnlPerformances'}).find_all('table')[1].find_all('tr')
-    athlete_rank = soup.find_all('table', {'class': 'alternatingrowspanel', 'cellpadding': '3'})[1].find_all('tr')
+    athlete_rank = soup.find('div', {'id': 'cphBody_pnlMain'}).find('td', {'width': 220, 'valign': 'top'}).find_all('table')
+    coach_dets = soup.find('div', {'id': 'cphBody_pnlAthletesCoached'})
 
-    
+    coaching = []
+    if coach_dets is not None:
+        s = coach_dets.find('table', {'class': 'alternatingrowspanel'}).find_all('tr')
+        for i in s:
+            dets = i.find_all('td')
+            if dets[0].text != 'Name':
+                coaching.append({
+                    'name': dets[0].text,
+                    'club': dets[1].text,
+                    'age group': dets[2].text,
+                    'sex': dets[3].text,
+                    'best event': dets[4].text,
+                    'rank': dets[5].text,
+                    'age group': dets[6].text,
+                    'year': dets[7].text,
+                    'performance': dets[8].text
+                })
+
+
     rankings = []
-    for i in athlete_rank:
-        ranks = i.find_all('td')
-        if ranks[0].text != 'Event':
-            rankings.append({
-                'event': ranks[0].text,
-                'age group': ranks[2].text,
-                'year': ranks[3].text,
-                'rank': ranks[4].text
-            })
-    
+    if len(athlete_rank) > 2:
+        for i in athlete_rank[2].find_all('tr'):
+            dets = i.find_all('td')
+            if dets[0].text != 'Event':
+                rankings.append({
+                    'event': dets[0].text,
+                    'age group': dets[2].text,
+                    'year': dets[3].text,
+                    'rank': dets[4].text
+                })
     
     performances = []
     for i in athlete_perf:
@@ -101,11 +122,8 @@ def get_athlete_details(id=None):
         'about': athlete_abo.text,
         'pb': pb,
         'performances': performances,
-        'rankings': rankings
+        'rankings': rankings,
+        'coaching': coaching
     }
 
     return athlete
-
-
-get_athlete_details(id=find_athletes(firstname='yasser', surname='qureshi')[0]['id'])
-#get_athlete(id=46473)
