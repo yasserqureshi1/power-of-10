@@ -2,6 +2,22 @@ import requests
 from bs4 import BeautifulSoup
 
 def find_coaches(firstname=None, surname=None, club=None):
+    '''
+    Returns a list of coaches with the inputted firstname, surname or club.
+
+            Parameters:
+                    - 'firstname' (str): Optional first name of coach argument
+                    - 'surname' (str): Optiona surname of coach argument
+                    - 'club' (str): Optional club of coach argument
+
+            Returns:
+                    - 'coaches' (arr): list of coach data in dict
+                        - 'firstname' (str): First name of coach
+                        - 'surname' (str): Surname of coach
+                        - 'sex' (str): Gender of coach
+                        - 'club' (str): Club of coach
+                        - 'athlete_id' (int): reference id of athlete (used by PowerOf10)
+    '''
     url = f'https://www.thepowerof10.info/coaches/coacheslookup.aspx?'
     if surname is not None:
         url += f'surname={surname}&'
