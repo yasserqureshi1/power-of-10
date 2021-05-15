@@ -3,6 +3,24 @@ from bs4 import BeautifulSoup
 
 
 def find_athletes(firstname=None, surname=None, club=None):
+    '''
+    Returns a list of athletes with the inputted firstname, surname or club.
+
+            Parameters:
+                    - 'firstname' (str): Optional first name agrument
+                    - 'surname' (str): Optional surname argument
+                    - 'club' (str): Optional club agrument
+
+            Returns:
+                    - 'list_of_athletes' (arr): list of athlete data in dict
+                        - 'firstname' (str): first name of athlete
+                        - 'surname' (str) surname of athlete
+                        - 'track' (str): age group for athlete on track 
+                        - 'road' (str): age group for athlete on road
+                        - 'sex' (str): gender of athlete
+                        - 'club' (str): athletics club of althete
+                        - 'athlete_id' (int): reference id of athlete (used by PowerOf10)
+    '''
     url = f'https://www.thepowerof10.info/athletes/athleteslookup.aspx?'
     if surname is not None:
         url += f'surname={surname}&'
@@ -22,23 +40,64 @@ def find_athletes(firstname=None, surname=None, club=None):
     if 'cphBody_lblResultsErrorMessage' in str(results[0]):
         raise RuntimeError('Too many athletes found. Please change the search criteria.')
 
-    data = []
+    list_of_athletes = []
     for r in results[1:-1]:
         row = BeautifulSoup(str(r), 'html.parser').find_all('td')
-        data.append({
-            'firstname': row[0].text, 
-            'surname': row[1].text,
-            'track': row[2].text,
-            'road': row[3].text,
-            'xc': row[4].text,
-            'sex': row[5].text,
-            'club': row[6].text,
-            'athlete_id': str(row[7]).split('"')[3].split('=')[1]})
+        list_of_athletes.append({
+                'firstname': row[0].text, 
+                'surname': row[1].text,
+                'track': row[2].text,
+                'road': row[3].text,
+                'xc': row[4].text,
+                'sex': row[5].text,
+                'club': row[6].text,
+                'athlete_id': str(row[7]).split('"')[3].split('=')[1]})
 
-    return data
+    return list_of_athletes
 
 
 def get_athlete(athlete_id):
+    '''
+    Returns a dictionary of athletes of athlete data for specified athlete id.
+
+            Parameters:
+                    - 'athlete_id' (int): reference id of athlete (used by PowerOf10)
+
+            Returns:
+                    - 'athletes' (dict): dictionary of athlete data
+                        - 'club' (str): Club of the athlete
+                        - 'gender' (str): Gender of athlete (M or F)
+                        - 'age group' (str): Age group division of athlete
+                        - 'county' (str): County that athlete competes for
+                        - 'region' (Str): Region that athlete competes for
+                        - 'nation' (str): Nation that athlete competes for
+                        - 'lead coach' (str): Athlete coach (usually used for notable coaches)
+                        - 'about' (str): Description of athlete (usually used for notable athletes)
+                        - 'pb' (arr): List of personal bests
+                            - 'event' (str): Event name
+                            - 'value' (float): Personal best in given event
+                        - 'performances' (arr): List of athlete performances
+                            - 'event' (str): Event name
+                            - 'value' (float): Performance in given event
+                            - 'position' (arr): 2x1 list containing <<<<<<<<<<<<<<<<<<
+                            - 'venue' (str): Location of event
+                            - 'meeting' (str): Meeting title
+                            - 'date' (str): Date of event
+                        - 'rankings' (arr): List of notable ranks of athletes
+                            - 'event' (str): Event name
+                            - 'age group' (str): Age group division at time of rank
+                            - 'year' (int): Year that rank was achieved
+                            - 'rank' (int): Rank of athlete
+                        - 'coaching' (arr): List of coaching experiences <<<<<<<<<<<<<<<
+                            - 'name' (str): Nmae of athlete coached
+                            - 'club' (str): Club of athlete coached
+                            - 'age group' (str): Age group division of athlete coached
+                            - 'sex' (str): Gender of athlete coached
+                            - 'best event' (str): Best event of athlete coached
+                            - 'rank' (int): Rank of athlete coached for their best event
+                            - 
+
+    '''
     if athlete_id is None:
         raise ValueError('Please input a valid athlete id.')
 
