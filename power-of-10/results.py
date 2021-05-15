@@ -3,6 +3,27 @@ from bs4 import BeautifulSoup, MarkupResemblesLocatorWarning
 
 
 def find_event(event=None, meeting=None, venue=None, date_from=None, year=None, date_to=None, meeting_type=None, terrain=None):
+    '''
+    Returns a list of events that correspond to the query parameters
+
+            Parameters:
+                    - 'event' (str): Optional event name
+                    - 'meeting' (str): Optional meeting name
+                    - 'venue' (str): Optional venue name
+                    - 'date_from' (str): Optional date to search from (to be used with 'date_to')
+                    - 'date_to' (str): Optional date to search to (to be used with 'date_from')
+                    - 'year' (int): Optional year to search within
+                    - 'meeting_type' (str): Optional type of meeting
+                    - 'terrain' (str): Optional type of terrain event was on
+
+            Returns:
+                    - 'results' (arr): List of results corresponding to event parameters
+                        - 'date' (str): Date of event
+                        - 'meeting' (str): Meeting name
+                        - 'venue' (str): Venue name of meeting
+                        - 'type' (str): <<<<<<<<<<<<<<<<
+                        - 'meeting_id' (int): Reference id of meeting (used by PowerOf10)
+    '''
     url = 'https://www.thepowerof10.info/results/resultslookup.aspx?'
 
     if event is not None:
@@ -18,53 +39,12 @@ def find_event(event=None, meeting=None, venue=None, date_from=None, year=None, 
     if year is not None:
         url += f'year={year}&'
     if meeting_type is not None:
-        if meeting_type == 'UK Calendar':
-            url += 'ukcalendar=y&'
-        elif meeting_type == 'World Calendar':
-            url += 'worldcalendar=y&'
-        elif meeting_type == 'BMC':
-            url += 'bmc=y&'
-        elif meeting_type == 'NAL':
-            url += 'meetingtypeid=53&'
-        elif meeting_type == 'YDL':
-            url += 'meetingtypeid=45&'
-        elif meeting_type == 'SAL':
-            url += 'meetingtypeid=44&'
-        elif meeting_type == 'NEL':
-            url += 'meetingtypeid=26&'
-        elif meeting_type == 'MJL':
-            url += 'meetingtypeid=34&'
+        mt = {'UK Calendar': 'ukcalendar=y&', 'World Calendar': 'worldcalendar=y&', 'BMC': 'bmc=y&', 'NAL': 'meetingtypeid=53&', 'YDL': 'meetingtypeid=45&', 'SAL': 'meetingtypeid=44&', 'NEL': 'meetingtypeid=26&', 'MJL': 'meetingtypeid=34&'}
+        url += mt[meeting_type]
+
     if terrain is not None:
-        if terrain == 'any':
-            url += 'terraintypecodes=A&'
-        if terrain == 'virtual':
-            url += 'terraintypecodes=V&'
-        if terrain == 'disability':
-            url += 'terraintypecodes=D&'
-        if terrain == 'walks':
-            url += 'terraintypecodes=W&'
-        if terrain == 'mountain':
-            url += 'terraintypecodes=H&'
-        if terrain == 'fell':
-            url += 'terraintypecodes=F&'
-        if terrain == 'road/multi/xc':
-            url += 'terraintypecodes=RMX&'
-        if terrain == 'road/multi':
-            url += 'terraintypecodes=RM&'
-        if terrain == '5k/10k/hm/mar':
-            url += 'terraintypecodes=B&'
-        if terrain == 'xc':
-            url += 'terraintypecodes=X&'
-        if terrain == 'multi':
-            url += 'terraintypecodes=M&'
-        if terrain == 'indoor':
-            url += 'terraintypecodes=I&'
-        if terrain == 'road':
-            url += 'terraintypecodes=R&'
-        if terrain == 'track':
-            url += 'terraintypecodes=T&'
-        if terrain == 'track/10k/hm/mar/xc':
-            url += 'terraintypecodes=TIDEX&'
+        tt = {'any': 'terraintypecodes=A&', 'virtual': 'terraintypecodes=V&', 'disability': 'terraintypecodes=D&', 'walks': 'terraintypecodes=W&', 'mountain': 'terraintypecodes=H&', 'fell': 'terraintypecodes=F&', 'road/multi/xc': 'terraintypecodes=RMX&', 'road/multi': 'terraintypecodes=RM&', '5k/10k/hm/mar': 'terraintypecodes=B&', 'xc': 'terraintypecodes=X&', 'multi': 'terraintypecodes=M&', 'indoor': 'terraintypecodes=I&', 'road': 'terraintypecodes=R&', 'track': 'terraintypecodes=T&', 'track/10k/hm/mar/xc': 'terraintypecodes=TIDEX&'}
+        url += tt[terrain]
 
     html = requests.get(url)
     soup = BeautifulSoup(html.text, 'html.parser')
@@ -88,26 +68,19 @@ def find_event(event=None, meeting=None, venue=None, date_from=None, year=None, 
 
 def get_results(meeting_id):
     # TODO: Fix get_results() function
+    
     if meeting_id is None:
         raise ValueError('Please input a valud meeting id')
 
     url = f'https://www.thepowerof10.info/fixtures/meeting.aspx?meetingid={meeting_id}'
-    html = requests.get(url=url, params={'meetingid': meeting_id})
+    html = requests.get(url)
     soup = BeautifulSoup(html.text, 'html.parser')
-    print(html.text)
+
     if 'Could not find meeting' in soup.find('div', {'id': 'pnlMainGeneral'}).text.replace('\n',''):
         raise ValueError('Meeting not found. Please input a valid meeting id')
 
     meeting_dets = soup.find('div', {'id': 'pnlMainGeneral'}).find_all('table')[0].find('span').find_all('span')
     meeting_res = soup.find('table', {'id': 'cphBody_dgP'})
-    '''
-    for i in meeting_res:
-        print(i)
-        print('-----------')
-    '''
-    for i in soup.find_all('div', {'id': 'pnlMainGeneral'}):
-        print(i)
-        print(' ----------- ')
     
     meeting = {
         'title': meeting_dets[0].text,
@@ -117,5 +90,3 @@ def get_results(meeting_id):
     }
     #print(meeting)
     return
-
-get_results(237786)
