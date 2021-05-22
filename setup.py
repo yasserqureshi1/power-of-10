@@ -17,23 +17,23 @@ install_reqs = [
 ]
 
 setuptools.setup(
-    name="power-of-10-yasserqureshi1", # Replace with your own username
+    name="power-of-10",
     version="0.0.1",
     author="Yasser Qureshi",
     author_email="yasser.m.q01@gmail.com",
-    description="A small example package",
+    description="A UK athletics API",
     long_description=long_description,
     long_description_content_type="text/markdown",
-    url="https://github.com/pypa/sampleproject",
+    url="https://github.com/yasserqureshi1/power-of-10",
     project_urls={
-        "Bug Tracker": "https://github.com/pypa/sampleproject/issues",
+        "Bug Tracker": "https://github.com/yasserqureshi1/power-of-10/issues",
     },
     classifiers=[
         "Programming Language :: Python :: 3",
         "License :: OSI Approved :: MIT License",
         "Operating System :: OS Independent",
     ],
-    packages=['power-of-10'],
+    packages=['power_of_10'],
     python_requires=">=3.6",
     install_requires=install_reqs
 )
