@@ -162,8 +162,8 @@ Returns a dict of events that correspond to the query parameters
 - `event` (str): Optional event name
 - `meeting` (str): Optional meeting name
 - `venue` (str): Optional venue name
-- `date_from` (str): Optional date to search from (to be used with `date_to`)
-- `date_to` (str): Optional date to search to (to be used with `date_from`)
+- `date_from` (str): Optional date to search from with format 'DD-MMM-YYYY' (to be used with `date_to`)
+- `date_to` (str): Optional date to search to with format 'DD-MMM-YYYY' (to be used with `date_from`)
 - `year` (int): Optional year to search within
 - `meeting_type` (str): Optional type of meeting (See below for available meeting types)
 - `terrain` (str): Optional type of terrain event was on
