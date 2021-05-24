@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from .exceptions import QueryError, BroadQueryError
 
-def find_coaches(firstname=None, surname=None, club=None):
+def search_coaches(firstname=None, surname=None, club=None):
     '''
     Returns a list of coaches with the inputted firstname, surname or club.
 
@@ -33,13 +33,18 @@ def find_coaches(firstname=None, surname=None, club=None):
     html = requests.get(url)
     soup = BeautifulSoup(html.text, 'html.parser')
 
-    results = soup.find('table', {'id': 'cphBody_dgCoaches'}).find_all('tr')
+    if html.history != []:
+        ath = html.url.split('=')[1]
+        print(f'Only one athlete found with athlete_id: {ath}')
+        return ath
+
+    results = soup.find('div', {'id': 'cphBody_pnlResults'}).find_all('tr')
 
     if 'cphBody_lblResultsErrorMessage' in str(results[0]):
-        raise BroadQueryError(results[0].text)
+        raise QueryError(results[0].text)
 
     coaches = []
-    for i in results[1:]:
+    for i in results[1:-1]:
         dets = i.find_all('td')
         coaches.append({
             'firstname': dets[0].text,
