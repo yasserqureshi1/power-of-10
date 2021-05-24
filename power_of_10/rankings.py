@@ -2,7 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from .exceptions import QueryError, BroadQueryError
 
-def get_rankings(year, region, gender, age_group, event):
+def get_rankings(year, gender, age_group, event, region=None):
     '''
     Returns a list of ranks for given year, region, gender, age group and event.
 
@@ -42,25 +42,28 @@ def get_rankings(year, region, gender, age_group, event):
         
     html = requests.get(url)
     soup = BeautifulSoup(html.text, 'html.parser')
+    results = []
+    try:
+        results = soup.find('span', {'id': 'cphBody_lblCachedRankingList'}).find_all('tr')
+    except Exception as e:
+        QueryError('Please ensure all fields are filled correctly.')
 
-    results = soup.find('span', {'id': 'cphBody_lblCachedRankingList'}).find_all('tr')
-    
     rankings = []
     for i in results[2:]:
         dets = i.find_all('td')
-        print(dets)
-        rankings.append({
-            'rank': dets[0].text,
-            'performance': dets[1].text,
-            'pb': dets[4].text,
-            'name': dets[6].text,
-            'year': dets[8].text,
-            'coach': dets[9].text,
-            'club': dets[10].text,
-            'venue': dets[11].text,
-            'date': dets[12].text,
-            'athlete_id': str(dets[6]).split('"')[1].split('=')[1],
-            'meeting_id': str(dets[11]).split('=')[2].split('&')[0]
-        })
+        if dets[0].text != '' and len(dets) > 11:
+            rankings.append({
+                'rank': dets[0].text,
+                'performance': dets[1].text,
+                'pb': dets[4].text,
+                'name': dets[6].text,
+                'year': dets[8].text,
+                'coach': dets[9].text,
+                'club': dets[10].text,
+                'venue': dets[11].text,
+                'date': dets[12].text,
+                'athlete_id': str(dets[6]).split('"')[1].split('=')[1],
+                'meeting_id': str(dets[11]).split('=')[2].split('&')[0]
+            })
     
     return rankings
