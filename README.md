@@ -3,8 +3,12 @@
 This library intends to provide simplicity when accessing and parsing data from <a href="https://www.thepowerof10.info">Power of 10</a>, a UK-based site that provides a comprehensive collection of athete performances and rankings.
 
 ## Installation
+Install the package via pip:
+```
+pip install power-of-10==0.0.1
+```
 
-Install the package:
+Or install the package by:
 ```
 pip install setup.py
 ```
