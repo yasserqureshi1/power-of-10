@@ -56,3 +56,6 @@ class GetResults(unittest.TestCase):
     def test_invalid_meeting_id(self):
         with self.assertRaises(exceptions.QueryError):
             results.get_results(111111111)
+
+if __name__ == '__main__':
+    unittest.main()
