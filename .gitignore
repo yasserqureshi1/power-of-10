@@ -1,1 +1,4 @@
 venv
+build
+dist
+power_of_10.egg-info
