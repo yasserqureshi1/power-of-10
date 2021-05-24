@@ -4,7 +4,7 @@ from .exceptions import QueryError, BroadQueryError
 
 
 
-def find_event(event=None, meeting=None, venue=None, date_from=None, year=None, date_to=None, meeting_type=None, terrain=None):
+def search_event(event=None, meeting=None, venue=None, date_from=None, year=None, date_to=None, meeting_type=None, terrain=None):
     '''
     Returns a dict of events that correspond to the query parameters
 
@@ -105,7 +105,7 @@ def get_results(meeting_id):
     html = requests.get(url)
     soup = BeautifulSoup(html.text, 'html.parser')
 
-    if 'Could not find meeting' in soup.find('div', {'id': 'pnlMainGeneral'}).text.replace('\n',''):
+    if 'Could not find meeting' in soup.find('div', {'id': 'pnlMainGeneral'}).text.replace('\n','') or 'No results found' in soup.find('div', {'id': 'pnlMainGeneral'}).text.replace('\n',''):
         raise QueryError('Meeting not found. Please input a valid meeting id')
 
     meeting_dets = soup.find('div', {'id': 'pnlMainGeneral'}).find_all('table')[0].find('span')
