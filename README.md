@@ -114,7 +114,7 @@ Returns a list of ranks for given year, region, gender, age group and event.
 - `year` (int): Year of event rankings 
 - `region` (str): Region for event rankings (see below for available regions)
 - `gender` (str): Gender for event rankings
-- `age_group` (str): Age group of event rankings
+- `age_group` (str): Optional age group of event rankings
 - `event` (str): Event for rankings
 
 *Returns:*
@@ -131,24 +131,26 @@ Returns a list of ranks for given year, region, gender, age group and event.
     - `athlete_id` (int): Reference id of athlete (used by PowerOf10)
     - `meeting_id` (int): Reference id of event (used by PowerOf10)
 
-**Regions for rankings:**
-- east
-- east midlands
-- england
-- london
-- north east
-- north ireland
-- north west
-- scotland
-- south east
-- aouth west
-- wales
-- west midlands
-- yorkshire
+**Table of Parameters:**
+Region | Age Group 
+-------|-----------
+east | Leave blank for any 
+east midlands | U20 
+england | U17 
+london | U15  
+north east | U13 
+north ireland | | 
+north west | | 
+scotland | | 
+south east | | 
+south west | | 
+wales | | 
+west midlands | | 
+yorkshire | | 
 
-### 5. Find Event
+### 5. Search Event
 ```
-find_event(event=None, meeting=None, venue=None, date_from=None, year=None, date_to=None, meeting_type=None, terrain=None)
+search_event(event=None, meeting=None, venue=None, date_from=None, year=None, date_to=None, meeting_type=None, terrain=None)
 ```
 Returns a dict of events that correspond to the query parameters
 
@@ -170,32 +172,24 @@ Returns a dict of events that correspond to the query parameters
     - `type` (str): Type of terrain it was held on
     - `meeting_id` (int): Reference id of meeting (used by PowerOf10)
 
-**Meeting Types:**
-- UK Calendar
-- World Calendar
-- BMC
-- NAL
-- YDL
-- SAL
-- NEL
-- MJL
-
-**Terrain Types:**
-- any
-- virtual
-- disability
-- walks
-- mountain
-- fell
-- road/multi/xc
-- road/multi
-- 5k/10k/hm/mar
-- xc
-- multi
-- indoor
-- road
-- track
-- track/10k/hm/mar/xc
+**Table of Parameters:**
+Terrain Types | Meeting Types
+-------|-----------
+any | UK Calendar
+virtual | World Calendar
+disability | BMC
+walks | NAL
+mountain | YDL 
+fell | SAL
+road/multi/xc | NEL
+road/multi | MJL
+5k/10k/hm/mar | 
+xc | 
+multi | 
+indoor | 
+road | 
+track | 
+track/10k/hm/mar/xc |
 
 ### 6. Get Results
 ```
@@ -228,6 +222,3 @@ Returns a dict of information for a particular meeting
             - `sb` (float): Seasons best
             - `pb` (float): Personal best
 
-## TODO:
-
-- Create tests and perform tests
