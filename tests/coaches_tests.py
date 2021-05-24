@@ -1,38 +1,30 @@
 import unittest
+from power_of_10 import coaches, exceptions
 
 class FindCoaches(unittest.TestCase):
-    def common_firstname(self):
-        return
+    def test_firstname(self):
+        coach = coaches.search_coaches(firstname='John')
+        self.assertEqual(len(coach), 225)
 
-    def common_surname(self):
-        return
+    def test_surname(self):
+        coach = coaches.search_coaches(surname='smith')
+        self.assertEqual(len(coach), 95)
 
-    def large_club(self):
-        return
+    def test_club(self):
+        coach = coaches.search_coaches(club='sutton')
+        self.assertEqual(len(coach), 41)
 
-    def rare_firstname(self):
-        return
+    def test_specific_person(self):
+        coach = coaches.search_coaches(firstname='alex', surname='abbott', club='sutton')
+        self.assertEqual(coach, '380620')
 
-    def rare_surname(self):
-        return
+    def test_no_search(self):
+        with self.assertRaises(exceptions.QueryError):
+            coaches.search_coaches()
 
-    def small_club(self):
-        return
+    def test_non_exisiting_athlete(self):
+        with self.assertRaises(exceptions.QueryError):
+            coaches.search_coaches('ouoiubui')
 
-    def specific_person(self):
-        return
-
-    def firstname_and_surname(self):
-        return
-
-    def firstname_and_club(self):
-        return
-
-    def surname_and_club(self):
-        return
-
-    def no_search(self):
-        return
-
-    def non_exisiting_athlete(self):
-        return
+if __name__ == '__main__':
+    unittest.main()
