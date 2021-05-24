@@ -115,11 +115,8 @@ def get_athlete(athlete_id):
 
     athlete_dets = soup.find('div', {'id': 'cphBody_pnlAthleteDetails'}).find_all('table')[1].text.replace('\n', '').split(':')
     athlete_abo = soup.find('div', {'id': 'cphBody_pnlAbout'}).find_all('table')[1]
-    athlete_pb = soup.find('div', {'id': 'cphBody_divBestPerformances'}).find_all('tr')
-    athlete_perf = soup.find('div', {'id': 'cphBody_pnlPerformances'}).find_all('table')[1].find_all('tr')
-    athlete_rank = soup.find('div', {'id': 'cphBody_pnlMain'}).find('td', {'width': 220, 'valign': 'top'}).find_all('table')
+    
     coach_dets = soup.find('div', {'id': 'cphBody_pnlAthletesCoached'})
-
     coaching = []
     if coach_dets is not None:
         s = coach_dets.find('table', {'class': 'alternatingrowspanel'}).find_all('tr')
@@ -138,6 +135,7 @@ def get_athlete(athlete_id):
                     'performance': dets[8].text
                 })
 
+    athlete_rank = soup.find('div', {'id': 'cphBody_pnlMain'}).find('td', {'width': 220, 'valign': 'top'}).find_all('table')
     rankings = []
     if len(athlete_rank) > 2:
         for i in athlete_rank[2].find_all('tr'):
@@ -150,43 +148,65 @@ def get_athlete(athlete_id):
                     'rank': dets[4].text
                 })
     
-    performances = []
-    for i in athlete_perf:
-        if len(i.find_all('td')) > 1 and 'EventPerfPosVenueMeetingDate' != i.text:
-            dets = i.find_all('td')
-            performances.append({
-                'event': dets[0].text,
-                'value': dets[1].text,
-                'position': [dets[5].text, dets[6].text],
-                'venue': dets[9].text,
-                'meeting': dets[10].text,
-                'date': dets[11].text
-            })
+    try:
+        athlete_perf = soup.find('div', {'id': 'cphBody_pnlPerformances'}).find_all('table')[1].find_all('tr')
+        performances = []
+        for i in athlete_perf:
+            if len(i.find_all('td')) > 1 and 'EventPerfPosVenueMeetingDate' != i.text:
+                dets = i.find_all('td')
+                performances.append({
+                    'event': dets[0].text,
+                    'value': dets[1].text,
+                    'position': [dets[5].text, dets[6].text],
+                    'venue': dets[9].text,
+                    'meeting': dets[10].text,
+                    'date': dets[11].text
+                })
+    except Exception as e:
+        performances = []
 
-    pb = []
-    for i in athlete_pb:
-        if i.find('b').text != 'Event':
-            pb.append({
-                'event': i.find('b').text,
-                'value': i.find_all('td')[1].text
-            })
+    try:
+        athlete_pb = soup.find('div', {'id': 'cphBody_divBestPerformances'}).find_all('tr')
+        pb = []
+        for i in athlete_pb:
+            if i.find('b').text != 'Event':
+                pb.append({
+                    'event': i.find('b').text,
+                    'value': i.find_all('td')[1].text
+                })
+    except Exception as e:
+        pb = []
         
     if 'Login to add some details about this athlete' in athlete_abo:
         athlete_abo = None
 
-    athlete = {
-        'club': athlete_dets[1].replace('Gender',''),
-        'gender': athlete_dets[2].replace('Age Group',''),
-        'age_group': athlete_dets[3].replace('County', ''),
-        'county': athlete_dets[4].replace('Region',''),
-        'region': athlete_dets[5].replace('Nation',''),
-        'nation': athlete_dets[6].replace('Lead Coach',''),
-        'lead coach': athlete_dets[7],
-        'about': athlete_abo.text,
-        'pb': pb,
-        'performances': performances,
-        'rankings': rankings,
-        'coaching': coaching
-    }
+    if athlete_dets[1] == 'YesClub':
+        athlete = {
+            'club': athlete_dets[2].replace('Gender',''),
+            'gender': athlete_dets[3].replace('County',''),
+            'county': athlete_dets[4].replace('Region',''),
+            'region': athlete_dets[5].replace('Nation',''),
+            'nation': athlete_dets[6].replace('Lead Coach',''),
+            'about': athlete_abo.text,
+            'pb': pb,
+            'performances': performances,
+            'rankings': rankings,
+            'coaching': coaching
+        }
+    else:
+        athlete = {
+            'club': athlete_dets[1].replace('Gender',''),
+            'gender': athlete_dets[2].replace('Age Group',''),
+            'age_group': athlete_dets[3].replace('County', ''),
+            'county': athlete_dets[4].replace('Region',''),
+            'region': athlete_dets[5].replace('Nation',''),
+            'nation': athlete_dets[6].replace('Lead Coach',''),
+            'lead coach': athlete_dets[7],
+            'about': athlete_abo.text,
+            'pb': pb,
+            'performances': performances,
+            'rankings': rankings,
+            'coaching': coaching
+        }
 
     return athlete
