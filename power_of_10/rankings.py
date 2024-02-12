@@ -27,7 +27,7 @@ def get_rankings(year, gender, age_group, event, region=None):
                         - 'athlete_id' (int): Reference id of athlete (used by PowerOf10)
                         - 'meeting_id' (int): Reference id of event (used by PowerOf10)
     '''
-    if None in (year, region, gender, age_group, event):
+    if None in (year, gender, age_group, event):
         raise QueryError('Please ensure all search fields are filled.')
 
     url = f'https://www.thepowerof10.info/rankings/rankinglist.aspx?event={event.replace(" ","+")}&agegroup={age_group}&sex={gender}&year={year}'
